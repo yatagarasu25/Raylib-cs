@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.1</TargetFrameworks>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
     <EnableDefaultItems>false</EnableDefaultItems>
     <AssemblyName>Raylib-cs</AssemblyName>
     <RootNamespace>Raylib_cs</RootNamespace>
@@ -38,4 +38,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+
+  <ItemGroup>
+		<ProjectReference Include="$(SolutionDir)\Libraries\SystemEx\SystemEx.core.csproj" />
+		<ProjectReference Include="$(SolutionDir)\Libraries\MathEx\MathEx.core.csproj" />
+	</ItemGroup>
 </Project>

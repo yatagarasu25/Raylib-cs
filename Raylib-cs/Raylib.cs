@@ -1,7 +1,11 @@
 using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security;
+using Vector2 = MathEx.vec2;
+using Vector3 = MathEx.vec3;
+using Vector4 = MathEx.vec4;
+using Quaternion = MathEx.quaternion;
+using Matrix4x4 = MathEx.matrix4x4;
 
 namespace Raylib_cs
 {
@@ -248,7 +252,7 @@ namespace Raylib_cs
     public struct Transform
     {
         public Vector3 translation;        // Translation
-        public Vector4 rotation;           // Rotation
+        public Quaternion rotation;        // Rotation
         public Vector3 scale;              // Scale
     }
 
