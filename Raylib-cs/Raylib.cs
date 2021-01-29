@@ -2,99 +2,24 @@ using System;
 using System.Runtime.InteropServices;
 using System.Security;
 using Vector2 = MathEx.vec2;
+using Vector2i = MathEx.vec2i;
 using Vector3 = MathEx.vec3;
 using Vector4 = MathEx.vec4;
 using Quaternion = MathEx.quaternion;
 using Matrix4x4 = MathEx.matrix4x4;
+using Color = MathEx.colorb;
+using Rectangle = MathEx.rect2;
+using BoundingBox = MathEx.aabb3;
 
 namespace Raylib_cs
 {
-    // Color type, RGBA (32bit)
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct Color
-    {
-        public byte r;
-        public byte g;
-        public byte b;
-        public byte a;
-
-        // Example - Color.RED instead of RED
-        // Custom raylib color palette for amazing visuals
-        public static Color LIGHTGRAY = new Color(200, 200, 200, 255);
-        public static Color GRAY = new Color(130, 130, 130, 255);
-        public static Color DARKGRAY = new Color(80, 80, 80, 255);
-        public static Color YELLOW = new Color(253, 249, 0, 255);
-        public static Color GOLD = new Color(255, 203, 0, 255);
-        public static Color ORANGE = new Color(255, 161, 0, 255);
-        public static Color PINK = new Color(255, 109, 194, 255);
-        public static Color RED = new Color(230, 41, 55, 255);
-        public static Color MAROON = new Color(190, 33, 55, 255);
-        public static Color GREEN = new Color(0, 228, 48, 255);
-        public static Color LIME = new Color(0, 158, 47, 255);
-        public static Color DARKGREEN = new Color(0, 117, 44, 255);
-        public static Color SKYBLUE = new Color(102, 191, 255, 255);
-        public static Color BLUE = new Color(0, 121, 241, 255);
-        public static Color DARKBLUE = new Color(0, 82, 172, 255);
-        public static Color PURPLE = new Color(200, 122, 255, 255);
-        public static Color VIOLET = new Color(135, 60, 190, 255);
-        public static Color DARKPURPLE = new Color(112, 31, 126, 255);
-        public static Color BEIGE = new Color(211, 176, 131, 255);
-        public static Color BROWN = new Color(127, 106, 79, 255);
-        public static Color DARKBROWN = new Color(76, 63, 47, 255);
-        public static Color WHITE = new Color(255, 255, 255, 255);
-        public static Color BLACK = new Color(0, 0, 0, 255);
-        public static Color BLANK = new Color(0, 0, 0, 0);
-        public static Color MAGENTA = new Color(255, 0, 255, 255);
-        public static Color RAYWHITE = new Color(245, 245, 245, 255);
-
-        public Color(byte r, byte g, byte b, byte a)
-        {
-            this.r = r;
-            this.g = g;
-            this.b = b;
-            this.a = a;
-        }
-
-        public Color(int r, int g, int b, int a)
-        {
-            this.r = Convert.ToByte(r);
-            this.g = Convert.ToByte(g);
-            this.b = Convert.ToByte(b);
-            this.a = Convert.ToByte(a);
-        }
-
-        public override string ToString()
-        {
-            return string.Concat(r.ToString(), " ", g.ToString(), " ", b.ToString(), " ", a.ToString());
-        }
-    }
-
-    // Rectangle type
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct Rectangle
-    {
-        public float x;
-        public float y;
-        public float width;
-        public float height;
-
-        public Rectangle(float x, float y, float width, float height)
-        {
-            this.x = x;
-            this.y = y;
-            this.width = width;
-            this.height = height;
-        }
-    }
-
     // Image type, bpp always RGBA (32bit)
     // NOTE: Data stored in CPU memory (RAM)
     [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
     public struct Image
     {
         public IntPtr data;        // Image raw data (void *)
-        public int width;          // Image base width
-        public int height;         // Image base height
+        public Vector2i size;      // Image base size
         public int mipmaps;        // Mipmap levels, 1 by default
         public PixelFormat format; // Data format (PixelFormat type)
     }
@@ -105,8 +30,7 @@ namespace Raylib_cs
     public struct Texture2D
     {
         public uint id;            // OpenGL texture id
-        public int width;          // Texture base width
-        public int height;         // Texture base height
+        public Vector2i size;      // Texture base size
         public int mipmaps;        // Mipmap levels, 1 by default
         public PixelFormat format; // Data format (PixelFormat type)
     }
@@ -137,8 +61,7 @@ namespace Raylib_cs
     public struct CharInfo
     {
         public int value;                  // Character value (Unicode)
-        public int offsetX;                // Character offset X when drawing
-        public int offsetY;                // Character offset Y when drawing
+        public Vector2i offset;            // Character offset X when drawing
         public int advanceX;               // Character advance position X
         public Image image;                // Character image data
     }
@@ -313,20 +236,6 @@ namespace Raylib_cs
         public float distance;          // Distance to nearest hit
         public Vector3 position;        // Position of nearest hit
         public Vector3 normal;          // Surface normal of hit
-    }
-
-    // Bounding box type
-    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Ansi)]
-    public struct BoundingBox
-    {
-        public Vector3 min;        // Minimum vertex box-corner
-        public Vector3 max;        // Maximum vertex box-corner
-
-        public BoundingBox(Vector3 min, Vector3 max)
-        {
-            this.min = min;
-            this.max = max;
-        }
     }
 
     // Wave type, defines audio wave data
