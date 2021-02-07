@@ -752,6 +752,8 @@ namespace Raylib_cs
         public const int MAX_MATERIAL_MAPS = 12;
         public const int MAX_TOUCH_POINTS = 10;
 
+        public const int BEZIER_LINE_DIVISIONS = 24;
+
         // Callback delegate used in SetTraceLogCallback to allow for custom logging
         [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
         public delegate void TraceLogCallback(TraceLogType logType, string text, IntPtr args);
@@ -1419,6 +1421,77 @@ namespace Raylib_cs
         // Draw a line using cubic-bezier curves in-out
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
         public static extern void DrawLineBezier(Vector2 startPos, Vector2 endPos, float thick, Color color);
+
+        // Draw line using quadratic bezier curves with a control point
+        //[DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
+        public static void DrawLineBezierQuad(Vector2 startPos, Vector2 endPos, Vector2 controlPos, float thick, Color color)
+        {
+            const float step = 1.0f / BEZIER_LINE_DIVISIONS;
+
+            Vector2 previous = startPos;
+            Vector2 current = Vector2.zero;
+            float t = 0.0f;
+
+            for (int i = 0; i <= BEZIER_LINE_DIVISIONS; i++)
+            {
+                t = step * i;
+                float a = (1 - t) * (1 - t);
+                float b = 2 * (1 - t) * t;
+                float c = t * t;
+
+                // NOTE: The easing functions aren't suitable here because they don't take a control point
+                current.y = a * startPos.y + b * controlPos.y + c * endPos.y;
+                current.x = a * startPos.x + b * controlPos.x + c * endPos.x;
+
+                DrawLineEx(previous, current, thick, color);
+
+                previous = current;
+            }
+        }
+
+        public static void DrawLineBezierCubic(Vector2 startPos, Vector2 startB, Vector2 endB, Vector2 endPos, float thick, Color color)
+        {
+            const float step = 1.0f / BEZIER_LINE_DIVISIONS;
+
+            Func<float, float> a_30 = (float t) => (1 - t) * (1 - t) * (1 - t);
+            Func<float, float> a_31 = (float t) => 3 * t * (1 - t) * (1 - t);
+            Func<float, float> a_32 = (float t) => 3 * t * t * (1 - t);
+            Func<float, float> a_33 = (float t) => t * t * t;
+
+            Func<float, Vector2> bezier = (float t) => a_30(t) * startPos + a_31(t) * startB + a_32(t) * endB + a_33(t) * endPos;
+
+            Vector2 previous = startPos;
+            for (int i = 0; i <= BEZIER_LINE_DIVISIONS; i++)
+            {
+                Vector2 current = bezier(step * i);
+
+                DrawLineEx(previous, current, thick, color);
+
+                previous = current;
+            }
+        }
+
+        public static void DrawLineHermiteCubic(Vector2 startPos, Vector2 startVel, Vector2 endVel, Vector2 endPos, float thick, Color color)
+        {
+            const float step = 1.0f / BEZIER_LINE_DIVISIONS;
+
+            Func<float, float> a_30 = (float t) => 1 - 3 * t * t + 2 * t * t * t;
+            Func<float, float> a_31 = (float t) => t - 2 * t * t + t * t * t;
+            Func<float, float> a_32 = (float t) => -t * t + t * t * t;
+            Func<float, float> a_33 = (float t) => 3 * t * t - 2 * t * t * t;
+
+            Func<float, Vector2> hermite = (float t) => a_30(t) * startPos + a_31(t) * startVel + a_32(t) * endVel + a_33(t) * endPos;
+
+            Vector2 previous = startPos;
+            for (int i = 0; i <= BEZIER_LINE_DIVISIONS; i++)
+            {
+				Vector2 current = hermite(step * i);
+
+				DrawLineEx(previous, current, thick, color);
+
+                previous = current;
+            }
+        }
 
         // Draw lines sequence
         [DllImport(nativeLibName, CallingConvention = CallingConvention.Cdecl)]
