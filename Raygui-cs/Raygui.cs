@@ -7,11 +7,13 @@
 */
 
 using System;
-using System.Numerics;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
 using Raylib_cs;
+using Vector2 = MathEx.vec2;
+using Color = MathEx.colorb;
+using Rectangle = MathEx.rect2;
 
 namespace Raygui_cs
 {
